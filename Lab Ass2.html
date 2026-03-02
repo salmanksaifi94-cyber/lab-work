@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #b0cbe1, #00f2fe);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        color: #c1b0b0;
+    }
+
+    h1 {
+        margin-bottom: 30px;
+        color: rgb(51, 70, 234);
+        letter-spacing: 1px;
+    }
+
+    #search-main-container {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 30px;
+        width: 100%;
+        max-width: 900px;
+    }
+
+    #first-search-container,
+    #second-search-container,
+    #weather-info-main {
+        background: rgb(196, 72, 72);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        flex: 1;
+        min-width: 250px;
+    }
+
+    h3 {
+        margin-bottom: 15px;
+        color: #af9090;
+    }
+
+    form {
+        display: flex;
+        gap: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #cccccc;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus {
+        border-color: #4feffe;
+    }
+
+    button {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        background-color: #4facfe;
+        color: rgb(20, 14, 14);
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background-color: #f08b2d;
+    }
+
+    #search-history button {
+        display: block;
+        width: 100%;
+        margin-bottom: 8px;
+        background-color: #6a4a4a;
+        color: #333;
+    }
+
+    #search-history button:hover {
+        background-color: #8e5f5f;
+    }
+
+    #weather-info-main {
+        width: 100%;
+        max-width: 900px;
+    }
+
+    #fetched-data-container div {
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+
+ </style>
+</head>
+
+<body>
+    <h1>Async Weather Tracker</h1>
+    <div id="search-main-container">
+        <div id="first-search-container">
+            <h3>Search City</h3>
+            <form action="">
+                <input type="text" id="search-city">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div id="second-search-container">
+            <h3>Search History</h3>
+            <div id="search-history">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="weather-info-main">
+        <h3>Weather Info</h3>
+        <div id="fetched-data-container">
+        </div>
+    </div>
+
+    <script>
+        let API_KEY = '2c42d9150e7adc35a528e7d320f9ba0a'
+        let form = document.querySelector('form')
+        let city = document.querySelector('#search-city')
+        let weather = document.querySelector('#fetched-data-container')
+        let searchedCity = document.querySelector('#search-history')
+
+        async function getWeatherInfo(city) {
+            let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`)
+            console.log(response)
+
+            let data = await response.json()
+            let card = document.createElement('div')
+            card.innerHTML = `<div>City : ${data.name},${data.sys.country} </div>
+                                <div>Temp : ${data.main.temp} </div>
+                                <div>Weather : ${data.weather[0].main} </div>
+                                <div>Humidity : ${data.main.humidity} </div>
+                                <div>Wind : ${data.wind.speed} </div>`
+            weather.innerHTML = ""
+            weather.append(card)
+        
+            localStorage.setItem('cities',city)
+            let searchhist=document.getElementById("search-history")
+            let hist=document.createElement("div")
+            hist.innerHTML=`<p>${data.name}</p>`
+            searchhist.append(hist)
+        }
+
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            getWeatherInfo(city.value);
+        })
+    </script>
+</body>
+
+</html>
